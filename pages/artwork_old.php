@@ -1,0 +1,30 @@
+<link rel="stylesheet" href="/assets/css/styles.css">
+<?php $TITLE="Djelo — DigitalnaGalerija redizajn"; require __DIR__ . '/../db.php';
+$id = (int)($_GET['id'] ?? 0);
+$art = null;
+if ($id>0){
+  $stmt = $pdo->prepare("SELECT u.*, a.ime, a.prezime FROM umjetnine u LEFT JOIN umjetnici a ON u.umjetnik_id=a.id WHERE u.id=?");
+  $stmt->execute([$id]); $art = $stmt->fetch();
+}
+if (!$art){ echo "<h1>Djelo nije pronađeno</h1>"; return; }
+$img = '/uploads/' . ($art['slika'] ?: 'placeholder.jpg');
+?>
+<div class="grid cols-3">
+  <div class="card" style="grid-column: span 2">
+    <img src="<?= htmlspecialchars($img) ?>" alt="art" style="width:100%;height:auto;border-radius:14px">
+  </div>
+  <div class="card">
+    <h2><?= htmlspecialchars($art['naslov'] ?: 'Bez naslova') ?></h2>
+    <p class="muted"><?= nl2br(htmlspecialchars($art['opis'] ?: '')) ?></p>
+    <?php if ($art['cijena']): ?><p class="price">Cijena: <strong><?= number_format($art['cijena'],2,',','.') ?> KM</strong></p><?php endif; ?>
+    <p>Autor: <strong><?= htmlspecialchars(($art['ime'] ?? '').' '.($art['prezime'] ?? '')) ?></strong></p>
+    <div class="notice">Certifikat autentičnosti dostupan pri kupovini. <a href="/authenticity-certificate">Saznaj više</a>.</div>
+    <form method="post" action="/kontakt">
+      <input type="hidden" name="subject" value="Upit za djelo: <?= htmlspecialchars($art['naslov']) ?>">
+      <label>Vaše ime</label><input name="name" required>
+      <label>Email</label><input type="email" name="email" required>
+      <label>Poruka</label><textarea name="message" rows="4">Zanima me dostupnost i cijena za "<?= htmlspecialchars($art['naslov']) ?>".</textarea>
+      <div style="margin-top:8px"><button style="background:var(--accent);border:none;padding:10px 14px;border-radius:10px;font-weight:700">Pošalji upit</button></div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,19 @@
+:root{ --blue:#0a65c0; --muted:#6b7b90; --bg:#f4f7fb; }
+*{ box-sizing:border-box; } body{ margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:#111; }
+.header{ background:#0a65c0; color:#fff; padding:.8rem 1rem; display:flex; justify-content:space-between; align-items:center; }
+.header a{ color:#fff; text-decoration:none; margin-left:1rem; font-weight:600; }
+.container{ max-width:1100px; margin:1.4rem auto; padding:0 1rem; }
+.card{ background:#fff; border:1px solid #e7eef7; border-radius:14px; padding:1rem; box-shadow:0 1px 2px rgba(0,0,0,.04); }
+.grid{ display:grid; gap:1rem; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); }
+.btn{ display:inline-block; padding:.5rem .8rem; border-radius:10px; text-decoration:none; border:1px solid var(--blue); color:var(--blue); background:#fff; cursor:pointer; }
+.btn.primary{ background:var(--blue); color:#fff; }
+.btn.danger{ border-color:#c62828; color:#fff; background:#c62828; }
+.input, textarea, select{ width:100%; padding:.55rem .7rem; border:1px solid #d8e4f5; border-radius:10px; }
+.label{ display:block; margin:.4rem 0 .25rem; font-weight:600; }
+.table{ width:100%; border-collapse:collapse; } .table th,.table td{ border-bottom:1px solid #eef2f7; padding:.55rem .5rem; text-align:left; }
+.table th{ background:#f8fbff; } .badge{ display:inline-block; padding:.25rem .5rem; border-radius:8px; background:#eef5ff; color:#0a65c0; font-size:.8rem; }
+.thumb{ width:100%; aspect-ratio: 4/3; object-fit:cover; border-radius:12px; border:1px solid #e6edf7; }
+.modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; padding:1rem; z-index:9999; }
+.modal{ background:#fff; width:min(640px, 100%); border-radius:16px; padding:1rem; box-shadow:0 10px 30px rgba(0,0,0,.3); }
+.modal header{ display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eef2f7; margin:-1rem -1rem 1rem; padding:1rem; }
+.modal .actions{ display:flex; gap:.5rem; justify-content:flex-end; margin-top:1rem; }

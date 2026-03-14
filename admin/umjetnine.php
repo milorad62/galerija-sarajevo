@@ -1,0 +1,108 @@
+<?php
+require __DIR__ . '/../config/bootstrap.php';
+require __DIR__ . '/../includes/security.php';
+require __DIR__ . '/../db.php';
+
+// Admin guard: prilagodi prema svom sistemu uloga
+$isAdmin = false;
+if (!empty($_SESSION['is_admin']) && (int)$_SESSION['is_admin'] === 1) $isAdmin = true;
+if (!empty($_SESSION['role']) && $_SESSION['role'] === 'admin') $isAdmin = true;
+if (!empty($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') $isAdmin = true;
+
+if (!$isAdmin) {
+  http_response_code(403);
+  echo "<div style='padding:60px;text-align:center;'>";
+  echo "<h2>Pristup odbijen</h2>";
+  echo "<p>Ovaj dio je dostupan samo administratoru.</p>";
+  echo "<p><a class='btn primary' href='" . htmlspecialchars($BASE_URL) . "/login?redirect=" . rawurlencode($BASE_URL . "/admin/") . "'>Prijava</a></p>";
+  echo "</div>";
+  exit;
+}
+?>
+<?php
+// Kolone?
+$cols = [];
+$q = $conn->query("SHOW COLUMNS FROM umjetnine");
+if ($q) { while($r=$q->fetch_assoc()) { $cols[] = $r['Field']; } }
+$hasStatus = in_array('status', $cols);
+$hasFeatured = in_array('featured', $cols);
+
+// delete action
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delete') {
+  if (!csrf_verify($_POST['_csrf'] ?? null)) {
+    $flash = "CSRF greška.";
+  } else {
+    $id = (int)($_POST['id'] ?? 0);
+    if ($id > 0) {
+      $st = $conn->prepare("SELECT slika FROM umjetnine WHERE id=?");
+      $st->bind_param('i', $id);
+      $st->execute();
+      $res = $st->get_result()->fetch_assoc();
+      $st->close();
+      if (!empty($res['slika'])) {
+        $fp = __DIR__ . '/../uploads/' . basename($res['slika']);
+        if (file_exists($fp)) { @unlink($fp); }
+      }
+      $st = $conn->prepare("DELETE FROM umjetnine WHERE id=?");
+      $st->bind_param('i', $id);
+      $st->execute();
+      $st->close();
+      header("Location: umjetnine.php");
+      exit;
+    }
+  }
+}
+
+$sql = "SELECT u.id, u.naslov, u.opis, u.cijena, u.slika" . ($hasFeatured ? ", u.featured" : "") . ($hasStatus ? ", u.status" : "") . ",
+        a.ime, a.prezime
+        FROM umjetnine u LEFT JOIN umjetnici a ON u.umjetnik_id=a.id
+        ORDER BY u.id DESC";
+$res = $conn->query($sql);
+?>
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Umjetnine — Admin panel</title>
+<link rel="stylesheet" href="<?= htmlspecialchars($BASE_URL) ?>/assets/css/styles.css">
+</head>
+<body>
+<div class="header">
+  <strong>Umjetnine</strong>
+  <div class="row" style="gap:10px;">
+    <a href="moderacija.php" class="btn primary">Moderacija</a>
+    <a href="index.php" class="btn">Nazad</a>
+  </div>
+</div>
+<div class="container">
+  <?php if (!empty($flash)): ?><p style="color:#c00"><b><?= htmlspecialchars($flash) ?></b></p><?php endif; ?>
+  <table border="1" cellpadding="8" cellspacing="0" style="width:100%;border-collapse:collapse;">
+    <tr style="background:#0a65c0;color:#fff;">
+      <th>ID</th><th>Naslov</th><th>Autor</th><th>Cijena</th><th>Slika</th>
+      <?php if($hasStatus): ?><th>Status</th><?php endif; ?>
+      <?php if($hasFeatured): ?><th>Featured</th><?php endif; ?>
+      <th>Brisanje</th>
+    </tr>
+    <?php if($res): while($r=$res->fetch_assoc()): ?>
+    <tr>
+      <td><?= (int)$r['id'] ?></td>
+      <td><?= htmlspecialchars($r['naslov'] ?? '') ?></td>
+      <td><?= htmlspecialchars(($r['ime'] ?? '') . ' ' . ($r['prezime'] ?? '')) ?></td>
+      <td><?= !empty($r['cijena']) ? number_format((float)$r['cijena'],2,',','.') . ' KM' : '-' ?></td>
+      <td><img src="<?= htmlspecialchars($BASE_URL) ?>/uploads/<?= htmlspecialchars($r['slika'] ?? 'placeholder.jpg') ?>" style="width:80px;border-radius:6px;"></td>
+      <?php if($hasStatus): ?><td><span class="chip"><?= htmlspecialchars($r['status'] ?? '') ?></span></td><?php endif; ?>
+      <?php if($hasFeatured): ?><td><?= !empty($r['featured']) ? 'DA' : 'NE' ?></td><?php endif; ?>
+      <td>
+        <form method="post" action="umjetnine.php" onsubmit="return confirm('Obrisati ovu umjetninu?');" style="margin:0;">
+          <input type="hidden" name="_csrf" value="<?= htmlspecialchars(csrf_token()) ?>">
+          <input type="hidden" name="action" value="delete">
+          <input type="hidden" name="id" value="<?= (int)$r['id'] ?>">
+          <button class="btn danger" type="submit">Obriši</button>
+        </form>
+      </td>
+    </tr>
+    <?php endwhile; endif; ?>
+  </table>
+</div>
+</body>
+</html>

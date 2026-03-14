@@ -1,0 +1,81 @@
+<link rel="stylesheet" href="/galerija_sarajevo/assets/css/styles.css">
+
+<?php
+$TITLE = "Galerija — Digitalna Galerija";
+require __DIR__ . '/../db.php';
+
+$q   = isset($_GET['q'])   ? trim($_GET['q'])        : '';
+$min = isset($_GET['min']) ? floatval($_GET['min'])  : 0;
+$max = isset($_GET['max']) ? floatval($_GET['max'])  : 0;
+
+$sql = "
+SELECT u.id, u.naslov, u.opis, u.cijena, u.slika, a.ime, a.prezime
+FROM umjetnine u
+LEFT JOIN umjetnici a ON u.umjetnik_id = a.id
+WHERE 1
+";
+$params = [];
+
+if ($q !== '') {
+  $sql .= " AND (u.naslov LIKE ? OR u.opis LIKE ?)";
+  $params[] = "%$q%";
+  $params[] = "%$q%";
+}
+
+if ($min > 0) {
+  $sql .= " AND u.cijena >= ?";
+  $params[] = $min;
+}
+
+if ($max > 0) {
+  $sql .= " AND u.cijena <= ?";
+  $params[] = $max;
+}
+
+$sql .= " ORDER BY u.id DESC";
+
+$stmt = $conn->prepare($sql);
+
+// bind parametara ako ih ima
+if (!empty($params)) {
+    $types = str_repeat('s', count($params)); // svi parametri string tipa
+    $stmt->bind_param($types, ...$params);
+}
+
+$stmt->execute();
+$result = $stmt->get_result();
+$arts = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+?>
+
+<h1>Galerija</h1>
+
+<form class="filters" method="get">
+  <input type="text" name="q" placeholder="Traži po naslovu/opisu" value="<?= htmlspecialchars($q) ?>">
+  <input type="number" step="0.01" name="min" placeholder="Min KM" value="<?= $min ?: '' ?>">
+  <input type="number" step="0.01" name="max" placeholder="Max KM" value="<?= $max ?: '' ?>">
+  <button type="submit">Filtriraj</button>
+  <a class="badge" href="/galerija_sarajevo/galerija">Reset</a>
+</form>
+
+<div class="gallery-grid">
+<?php if ($arts): ?>
+  <?php foreach ($arts as $art): ?>
+    <?php
+      $img = '/galerija_sarajevo/uploads/' . ($art['slika'] ?: 'placeholder.jpg');
+      $autor = trim(($art['ime'] ?? '') . ' ' . ($art['prezime'] ?? ''));
+    ?>
+    <a class="art-card" href="/galerija_sarajevo/djelo?id=<?= $art['id'] ?>">
+      <img src="<?= htmlspecialchars($img) ?>" alt="Umjetnina">
+      <div class="meta">
+        <div class="title"><?= htmlspecialchars($art['naslov'] ?: 'Bez naslova') ?></div>
+        <div class="muted"><?= htmlspecialchars($autor) ?></div>
+        <?php if ($art['cijena'] !== null): ?>
+          <div class="price"><?= number_format($art['cijena'], 2, ',', '.') ?> KM</div>
+        <?php endif; ?>
+      </div>
+    </a>
+  <?php endforeach; ?>
+<?php else: ?>
+  <p class="muted">Trenutno nema zapisa koji odgovaraju filteru.</p>
+<?php endif; ?>
+</div>

@@ -1,0 +1,31 @@
+<?php
+session_start();
+require_once __DIR__ . '/../db.php';
+
+if (!isset($_SESSION['umjetnik_id'])) {
+  http_response_code(403);
+  echo "Niste prijavljeni.";
+  exit;
+}
+
+$uid = (int)$_SESSION['umjetnik_id'];
+$id = (int)($_POST['id'] ?? 0);
+
+if ($id <= 0) {
+  echo "Neispravan ID.";
+  exit;
+}
+
+$stmt = $conn->prepare("SELECT slika FROM umjetnine WHERE id=? AND umjetnik_id=?");
+$stmt->bind_param('ii', $id, $uid);
+$stmt->execute();
+$res = $stmt->get_result();
+if ($row = $res->fetch_assoc()) {
+  $file = __DIR__ . '/../uploads/' . $row['slika'];
+  if (is_file($file)) unlink($file);
+  $del = $conn->prepare("DELETE FROM umjetnine WHERE id=? AND umjetnik_id=?");
+  $del->bind_param('ii', $id, $uid);
+  $del->execute();
+}
+header("Location: dodaj_umjetninu.php");
+exit;

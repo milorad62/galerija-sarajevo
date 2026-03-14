@@ -1,0 +1,28 @@
+<?php
+$TITLE = $TITLE ?? "Moja Digitalna Galerija";
+?>
+<!doctype html>
+<html lang="bs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><?= htmlspecialchars($TITLE) ?></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/galerija_sarajevo/assets/css/styles.css?v=1">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="/galerija_sarajevo/">MojaGalerija<span>.ba</span></a>
+      <nav>
+        <a href="/galerija_sarajevo/galerija">Galerija</a>
+        <a href="/galerija_sarajevo/umjetnici">Umjetnici</a>
+        <a href="/galerija_sarajevo/authenticity-certificate">Certifikat</a>
+        <a href="/galerija_sarajevo/faq">FAQ</a>
+        <a href="/galerija_sarajevo/o-nama">O nama</a>
+        <a href="/galerija_sarajevo/kontakt">Kontakt</a>
+        <a href="/galerija_sarajevo/administracija">Administracija</a>
+      </nav>
+    </div>
+  </header>

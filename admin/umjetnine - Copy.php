@@ -1,0 +1,22 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+require_once __DIR__ . '/../db.php';
+if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] ?? '') !== 'admin') { header('Location: ../login.php'); exit; }
+$sql="SELECT u.id,u.naslov,u.cijena,u.slika,a.ime,a.prezime FROM umjetnine u LEFT JOIN umjetnici a ON u.umjetnik_id=a.id ORDER BY u.id DESC";
+$list=$conn->query($sql);
+?><!doctype html><html lang="bs"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Umjetnine — Admin</title><link rel="stylesheet" href="<?= htmlspecialchars($BASE_URL) ?>/assets/css/styles.css"></head><body>
+<div class="header"><strong>MojaGalerija.ba — Admin</strong><nav>
+  <a href="/galerija_sarajevo/admin/">Početna</a>
+  <a href="/galerija_sarajevo/admin/umjetnici.php">Umjetnici</a>
+</nav></div>
+<div class="container"><div class="card"><h2>Umjetnine</h2>
+<table class="table"><thead><tr><th>ID</th><th>Slika</th><th>Naslov</th><th>Cijena</th><th>Umjetnik</th></tr></thead><tbody>
+<?php while($r=$list->fetch_assoc()): ?><tr>
+<td><?= (int)$r['id'] ?></td>
+<td><img src="/galerija_sarajevo/uploads/<?= htmlspecialchars($r['slika']) ?>" alt="" style="width:80px;height:60px;object-fit:cover;border-radius:8px;border:1px solid #e6edf7;"></td>
+<td><?= htmlspecialchars($r['naslov']??'') ?></td>
+<td><?= number_format((float)$r['cijena'],2,',','.') ?> KM</td>
+<td><?= htmlspecialchars(($r['ime']??'').' '.($r['prezime']??'')) ?></td></tr>
+<?php endwhile; ?></tbody></table></div></div></body></html>

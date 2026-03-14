@@ -1,0 +1,38 @@
+body.dashboard {
+    background-color: #121212;
+    color: #f5f5f5;
+    font-family: 'Noto Sans', sans-serif;
+    text-align: center;
+    padding-top: 50px;
+}
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+nav li {
+    margin: 15px 0;
+}
+nav a {
+    color: #ff4081;
+    text-decoration: none;
+    font-size: 1.2em;
+}
+nav a:hover {
+    text-decoration: underline;
+}
+/*
+/* Fix alignment of login form inputs */
+form label {
+    display: inline-block;
+    width: 120px; /* prilagodi ako treba */
+    text-align: right;
+    margin-right: 10px;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"] {
+    width: 250px;
+    box-sizing: border-box;
+}
+*/

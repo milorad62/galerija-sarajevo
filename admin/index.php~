@@ -1,0 +1,30 @@
+<?php
+session_start();
+require_once __DIR__ . '/../db.php';
+?>
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin panel — MojaGalerija</title>
+<link rel="stylesheet" href="/galerija_sarajevo/assets/css/styles.css">
+</head>
+<body>
+<div class="header">
+  <strong>Admin panel — MojaGalerija</strong>
+  <a href="/galerija_sarajevo/logout.php" class="btn danger">Odjava</a>
+</div>
+
+<div class="container">
+  <div class="card" style="max-width:500px;margin:2rem auto;text-align:center;">
+    <h2>Administracija</h2>
+    <p>Odaberite tabelu koju želite pregledati:</p>
+    <div style="display:flex;justify-content:center;gap:1rem;">
+      <a href="umjetnici.php" class="btn primary">Umjetnici</a>
+      <a href="umjetnine.php" class="btn">Umjetnine</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,12 @@
+Options -MultiViews
+RewriteEngine On
+RewriteBase /galerija_sarajevo/
+
+# 1️⃣ Dozvoli direktan pristup admin folderu
+RewriteCond %{REQUEST_URI} ^/galerija_sarajevo/admin
+RewriteRule ^ - [L]
+
+# 2️⃣ Ako fajl ili folder ne postoji, preusmjeri na index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]
