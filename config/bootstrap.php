@@ -20,5 +20,6 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 
 
 // Base URL (radi i u podfolderu i na root domeni)
-$BASE_URL = rtrim(str_replace('\\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '')), '/');
+$script = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : '';
+$BASE_URL = rtrim(str_replace('\\', '/', dirname($script)), '/');
 if ($BASE_URL === '/') { $BASE_URL = ''; }
