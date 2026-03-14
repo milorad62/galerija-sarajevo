@@ -1,24 +1,26 @@
 <?php
-// db.php - database connection settings
-$DB_HOST = getenv('DB_HOST') ?: 'sql302.infinityfree.com';
-$DB_NAME = getenv('DB_NAME') ?: 'if0_41280102_art_gallery';
-$DB_USER = getenv('DB_USER') ?: 'if0_41280102';
-$DB_PASS = getenv('DB_PASS') ?: 'HfLUAbqj48bT';
+$DB_HOST = $_ENV['MYSQLHOST'] ?? $_ENV['DB_HOST'] ?? '127.0.0.1';
+$DB_NAME = $_ENV['MYSQLDATABASE'] ?? $_ENV['DB_NAME'] ?? 'art_gallery';
+$DB_USER = $_ENV['MYSQLUSER'] ?? $_ENV['DB_USER'] ?? 'root';
+$DB_PASS = $_ENV['MYSQLPASSWORD'] ?? $_ENV['DB_PASS'] ?? '';
+$DB_PORT = $_ENV['MYSQLPORT'] ?? $_ENV['DB_PORT'] ?? '3306';
 
 try {
-    $pdo = new PDO("mysql:host=$DB_HOST;dbname=$DB_NAME;charset=utf8mb4", $DB_USER, $DB_PASS, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    ]);
+    $pdo = new PDO(
+        "mysql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_NAME;charset=utf8mb4",
+        $DB_USER,
+        $DB_PASS,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ]
+    );
 } catch (PDOException $e) {
-    http_response_code(500);
-    echo "DB Connection error: " . htmlspecialchars($e->getMessage());
-    exit;
+    die("DB Connection error: " . $e->getMessage());
 }
-$conn = mysqli_connect($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
+
+$conn = mysqli_connect($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, (int)$DB_PORT);
 if (!$conn) {
-    http_response_code(500);
-    echo "MySQLi Connection error: " . htmlspecialchars(mysqli_connect_error());
-    exit;
+    die("MySQLi Connection error: " . mysqli_connect_error());
 }
 mysqli_set_charset($conn, "utf8mb4");
