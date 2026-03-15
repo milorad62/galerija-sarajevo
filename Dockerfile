@@ -6,4 +6,4 @@ WORKDIR /app
 
 COPY . /app
 
-CMD php -S 0.0.0.0:$PORT -t .
+CMD ["sh", "-c", "php -S 0.0.0.0:${PORT:-8080} -t ."]
