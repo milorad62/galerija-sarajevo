@@ -11,7 +11,7 @@ $artists = $pdo->query("SELECT id, ime, prezime, email FROM umjetnici ORDER BY p
 <?php foreach ($artists as $a): ?>
   <div class="card">
     <h3>
-      <a href="/galerija_sarajevo/artist?id=<?= $a['id'] ?>">
+      <a href="/artist?id=<?= $a['id'] ?>">
         <?= htmlspecialchars($a['ime'] . ' ' . $a['prezime']) ?>
       </a>
     </h3>
