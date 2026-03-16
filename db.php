@@ -1,9 +1,10 @@
 <?php
-$DB_HOST = $_ENV['MYSQLHOST'] ?? $_ENV['DB_HOST'] ?? '127.0.0.1';
-$DB_NAME = $_ENV['MYSQLDATABASE'] ?? $_ENV['DB_NAME'] ?? 'art_gallery';
-$DB_USER = $_ENV['MYSQLUSER'] ?? $_ENV['DB_USER'] ?? 'root';
-$DB_PASS = $_ENV['MYSQLPASSWORD'] ?? $_ENV['DB_PASS'] ?? '';
-$DB_PORT = $_ENV['MYSQLPORT'] ?? $_ENV['DB_PORT'] ?? '3306';
+
+$DB_HOST = getenv('MYSQLHOST') ?: getenv('DB_HOST') ?: '127.0.0.1';
+$DB_NAME = getenv('MYSQLDATABASE') ?: getenv('DB_NAME') ?: 'art_gallery';
+$DB_USER = getenv('MYSQLUSER') ?: getenv('DB_USER') ?: 'root';
+$DB_PASS = getenv('MYSQLPASSWORD') ?: getenv('DB_PASS') ?: '';
+$DB_PORT = getenv('MYSQLPORT') ?: getenv('DB_PORT') ?: '3306';
 
 try {
     $pdo = new PDO(
@@ -20,7 +21,9 @@ try {
 }
 
 $conn = mysqli_connect($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, (int)$DB_PORT);
+
 if (!$conn) {
     die("MySQLi Connection error: " . mysqli_connect_error());
 }
+
 mysqli_set_charset($conn, "utf8mb4");
