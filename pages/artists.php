@@ -16,7 +16,7 @@ $artists = $pdo->query("SELECT id, ime, prezime, email FROM umjetnici ORDER BY p
       </a>
     </h3>
     <p class="muted"><?= htmlspecialchars($a['email'] ?: '') ?></p>
-    <a class="badge" href="/galerija_sarajevo/artist?id=<?= $a['id'] ?>">Pogledaj djela</a>
+    <a class="badge" href="/artist?id=<?= $a['id'] ?>">Pogledaj djela</a>
   </div>
 <?php endforeach; ?>
 </div>
