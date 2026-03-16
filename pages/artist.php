@@ -114,7 +114,7 @@ $st->close();
                 </a>
 
                 <div style="margin-top:10px;">
-                    <a class="btn primary" href="<?= htmlspecialchars($BASE_URL) ?>../kupovina.php?art_id=<?= (int)$art['id'] ?>">Pošalji upit</a>
+                    <a class="btn primary" href="<?= htmlspecialchars($BASE_URL) ?>./kupovina.php?art_id=<?= (int)$art['id'] ?>">Pošalji upit</a>
                 </div>
             </div>
         <?php endforeach; ?>
