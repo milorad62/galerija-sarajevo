@@ -1,3 +1,11 @@
 <?php
-// Use the same login as the main site: just redirect to ../login.php and come back.
-header('Location: ../login.php?redirect=/galerija_sarajevo/admin/');
+require __DIR__ . '/../config/bootstrap.php';
+
+$BASE_URL = '';
+$scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+if (strpos($scriptName, '/galerija_sarajevo/') !== false) {
+    $BASE_URL = '/galerija_sarajevo';
+}
+
+header('Location: ' . $BASE_URL . '/login.php?redirect=' . urlencode($BASE_URL . '/admin/'));
+exit;
