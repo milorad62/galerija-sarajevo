@@ -42,7 +42,7 @@ if (!$isAdmin) {
 <body>
 <div class="header">
     <strong>Admin panel — MojaGalerija</strong>
-    <a href="<?= htmlspecialchars($BASE_URL) ?>/logout.php" class="btn danger">Odjava</a>
+   <a href="<?= htmlspecialchars($BASE_URL) ?>/logout.php" class="btn danger">Odjava</a>
 </div>
 
 <div class="container">
