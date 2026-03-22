@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['umjetnik_ime'] = trim(($u['ime'] ?? '') . ' ' . ($u['prezime'] ?? ''));
                 $_SESSION['role'] = $u['role'] ?? 'user';
                 // ako admin dio koristi ove session ključeve, postavi i njih
-                 header('Location: ' . $redirect);
+                 header('Location: ' . $BASE_URL . '/');
                 exit;
             } else {
                 $error = 'Pogrešna lozinka.';
