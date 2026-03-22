@@ -10,21 +10,26 @@ if (strpos($scriptName, '/galerija_sarajevo/') !== false) {
 
 $error = '';
 
-// Prihvati redirect iz URL-a, ali samo interne putanje
-$redirect = $_GET['redirect'] ?? $_POST['redirect'] ?? ($BASE_URL . '/pages/dodaj_umjetninu.php');
+// default redirect
+$defaultArtistRedirect = $BASE_URL . '/pages/dodaj_umjetninu.php';
+$defaultAdminRedirect  = $BASE_URL . '/admin/';
 
-if (!is_string($redirect) || $redirect === '') {
-    $redirect = $BASE_URL . '/pages/dodaj_umjetninu.php';
+// prihvati redirect iz URL-a ili POST-a
+$redirect = $_GET['redirect'] ?? $_POST['redirect'] ?? '';
+
+// validacija redirecta
+if (!is_string($redirect)) {
+    $redirect = '';
 }
 
-// sigurnost: dozvoli samo interne putanje koje počinju sa /
-if (strpos($redirect, '/') !== 0) {
-    $redirect = $BASE_URL . '/pages/dodaj_umjetninu.php';
+// dozvoli samo interne putanje koje počinju sa /
+if ($redirect !== '' && strpos($redirect, '/') !== 0) {
+    $redirect = '';
 }
 
-// zabrani full external URL
-if (preg_match('~^https?://~i', $redirect)) {
-    $redirect = $BASE_URL . '/pages/dodaj_umjetninu.php';
+// zabrani vanjske URL-ove
+if ($redirect !== '' && preg_match('~^https?://~i', $redirect)) {
+    $redirect = '';
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -50,16 +55,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($u) {
             if (password_verify($pass, $u['lozinka'])) {
-                // standardizovane session varijable
                 $_SESSION['artist_id'] = (int)$u['id'];
                 $_SESSION['artist_name'] = trim(($u['ime'] ?? '') . ' ' . ($u['prezime'] ?? ''));
 
                 // kompatibilnost sa starijim dijelovima projekta
                 $_SESSION['umjetnik_id'] = (int)$u['id'];
                 $_SESSION['umjetnik_ime'] = trim(($u['ime'] ?? '') . ' ' . ($u['prezime'] ?? ''));
+
                 $_SESSION['role'] = $u['role'] ?? 'user';
-                // ako admin dio koristi ove session ključeve, postavi i njih
-                 header('Location: ' . $BASE_URL . '/');
+
+                // odluči gdje ide poslije login-a
+                if ($redirect !== '') {
+                    header('Location: ' . $redirect);
+                    exit;
+                }
+
+                if (!empty($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+                    header('Location: ' . $defaultAdminRedirect);
+                    exit;
+                }
+
+                header('Location: ' . $defaultArtistRedirect);
                 exit;
             } else {
                 $error = 'Pogrešna lozinka.';
