@@ -10,6 +10,23 @@ if (strpos($scriptName, '/galerija_sarajevo/') !== false) {
 
 $error = '';
 
+// Prihvati redirect iz URL-a, ali samo interne putanje
+$redirect = $_GET['redirect'] ?? $_POST['redirect'] ?? ($BASE_URL . '/pages/dodaj_umjetninu.php');
+
+if (!is_string($redirect) || $redirect === '') {
+    $redirect = $BASE_URL . '/pages/dodaj_umjetninu.php';
+}
+
+// sigurnost: dozvoli samo interne putanje koje počinju sa /
+if (strpos($redirect, '/') !== 0) {
+    $redirect = $BASE_URL . '/pages/dodaj_umjetninu.php';
+}
+
+// zabrani full external URL
+if (preg_match('~^https?://~i', $redirect)) {
+    $redirect = $BASE_URL . '/pages/dodaj_umjetninu.php';
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $pass  = trim($_POST['password'] ?? '');
@@ -41,7 +58,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['umjetnik_id'] = (int)$u['id'];
                 $_SESSION['umjetnik_ime'] = trim(($u['ime'] ?? '') . ' ' . ($u['prezime'] ?? ''));
 
-                header('Location: ' . $BASE_URL . '/pages/dodaj_umjetninu.php');
+                // ako admin dio koristi ove session ključeve, postavi i njih
+                $_SESSION['admin_id'] = (int)$u['id'];
+                $_SESSION['admin_name'] = trim(($u['ime'] ?? '') . ' ' . ($u['prezime'] ?? ''));
+
+                header('Location: ' . $redirect);
                 exit;
             } else {
                 $error = 'Pogrešna lozinka.';
@@ -77,6 +98,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <form method="post">
+            <input type="hidden" name="redirect" value="<?= htmlspecialchars($redirect) ?>">
+
             <label class="label">E-mail</label>
             <input class="input" type="email" name="email" required>
 
