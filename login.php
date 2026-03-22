@@ -57,12 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // kompatibilnost sa starijim dijelovima projekta
                 $_SESSION['umjetnik_id'] = (int)$u['id'];
                 $_SESSION['umjetnik_ime'] = trim(($u['ime'] ?? '') . ' ' . ($u['prezime'] ?? ''));
-
+                $_SESSION['role'] = $u['role'] ?? 'user';
                 // ako admin dio koristi ove session ključeve, postavi i njih
-                $_SESSION['admin_id'] = (int)$u['id'];
-                $_SESSION['admin_name'] = trim(($u['ime'] ?? '') . ' ' . ($u['prezime'] ?? ''));
-
-                header('Location: ' . $redirect);
+                 header('Location: ' . $redirect);
                 exit;
             } else {
                 $error = 'Pogrešna lozinka.';
